@@ -38,7 +38,7 @@ def parse_cases(kml: IO[bytes]) -> List[Dict[str, Any]]:
                     coordinates = point.getElementsByTagName('coordinates')[0].childNodes[0].data
                     longitude, latitude, _ = coordinates.split(',')
                     row = {
-                        'casetype': CASE_TYPES[case_type],
+                        'case_type': CASE_TYPES[case_type],
                         'latitude': latitude.strip(),
                         'longitude': longitude.strip(),
                         'name': f"\'{name.strip()}\'",
