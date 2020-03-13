@@ -29,7 +29,6 @@ def parse_cases(kml: IO[bytes]) -> List[Dict[str, Any]]:
         case_type = folder.getElementsByTagName('name')[0].childNodes[0].data
         if case_type in CASE_TYPES:
             placemarks = folder.getElementsByTagName('Placemark')
-            print(case_type)
             for placemark in placemarks:
                 try:
                     name = placemark.getElementsByTagName('name')[0].childNodes[0].data

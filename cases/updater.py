@@ -13,12 +13,13 @@ def sync_db(cases: List[Dict[str, Any]]) -> None:
     new_date = timezone.now()
     # insert into db
     for case in cases:
-        case['update_flag'] = new_flag
-        case['date_received'] = new_date
         CoronaCaseRaw.objects.update_or_create(
-            latitude=case['latitude'],
-            longitude=case['longitude'],
-            defaults=case,
+            defaults={
+                'update_flag': new_flag,
+                'date_received': new_date,
+                **case,
+            },
+            **case
         )
     # delete any cases which weren't in the map data
     CoronaCaseRaw.objects.filter(update_flag=(not new_flag)).delete()

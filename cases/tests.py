@@ -108,6 +108,11 @@ class UpdaterTests(TestCase):
         )
         self.assertRaises(ValueError, sync_db, [])
 
+    def test_with_live_data(self):
+        cases = fetch_cases()
+        sync_db(cases)
+
+
 SAMPLE_DATA = [
     {
         'case_type': 'Suspected',

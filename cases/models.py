@@ -27,10 +27,3 @@ class CoronaCaseRaw(models.Model):
     # internal
     update_flag = models.BooleanField(default=False)
     date_received = models.DateTimeField(default=timezone.now)
-
-
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(fields=['latitude', 'longitude'], name="location"),
-        ]
-
