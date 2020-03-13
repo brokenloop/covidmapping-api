@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 
 
 class CoronaCaseRaw(models.Model):
@@ -23,8 +24,13 @@ class CoronaCaseRaw(models.Model):
     description = models.CharField(max_length=1200)
     latitude = models.DecimalField(max_digits=15, decimal_places=12) 
     longitude = models.DecimalField(max_digits=15, decimal_places=12) 
+    # internal
+    update_flag = models.BooleanField(default=False)
+    date_received = models.DateTimeField(default=timezone.now)
+
 
     class Meta:
         constraints = [
             models.UniqueConstraint(fields=['latitude', 'longitude'], name="location"),
         ]
+
