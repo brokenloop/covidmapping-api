@@ -109,9 +109,17 @@ class UpdaterTests(TestCase):
         )
         self.assertRaises(ValueError, self.updater.sync_db, [])
 
-    def test_with_live_data(self):
-        cases = fetch_cases()
-        self.updater.sync_db(cases)
+    def test_sync_db_multiple_updates(self):
+        self.updater.sync_db(SAMPLE_DATA)
+        self.updater.sync_db([SAMPLE_DATA[0]])
+        expected_num_entries: int = 1
+        num_entries: int = CoronaCaseRaw.objects.all().count()
+        self.assertEqual(expected_num_entries, num_entries)
+
+
+    # def test_with_live_data(self):
+    #     cases = fetch_cases()
+    #     self.updater.sync_db(cases)
 
 
 SAMPLE_DATA = [
