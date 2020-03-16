@@ -106,7 +106,8 @@ class UpdaterTests(TestCase):
             update_flag=False,
             date_received=timezone.now(),
         )
-        self.assertRaises(ValueError, self.updater.sync_db, [])
+        self.updater.sync_db([])
+
 
     def test_sync_db_multiple_updates(self):
         self.updater.sync_db(SAMPLE_DATA)

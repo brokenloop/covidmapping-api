@@ -1,15 +1,8 @@
-import schedule
-from django.shortcuts import render
 from django.http import HttpResponse
 from rest_framework import viewsets
 from rest_framework import permissions
 from .serializers import CoronaCaseRawSerializer
 from .models import CoronaCaseRaw
-from .updater import Updater
-
-# is there a better place for this? 
-updater = Updater()
-updater.run()
 
 def index(request):
     return HttpResponse("Hello, world. You're at the polls index.")

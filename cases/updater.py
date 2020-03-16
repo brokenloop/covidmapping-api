@@ -3,7 +3,7 @@ import threading
 import time
 from django.utils import timezone
 from typing import Dict, List, Any
-from .decorators import skip_when_testing
+from .decorators import only_run_on_server
 from .map_client import fetch_cases
 from .models import CoronaCaseRaw
 
@@ -12,8 +12,12 @@ class Updater():
     # 1 hour
     interval = 3600
 
-    @skip_when_testing
+    def __init__(self):
+        print('starting updater')
+
+    @only_run_on_server
     def run(self):
+        print('running')
         if self.should_update():
             self.update()
         schedule.every(self.interval).seconds.do(self.update)
@@ -47,8 +51,7 @@ class Updater():
     def sync_db(self, cases: List[Dict[str, Any]]) -> None:
         """Pulls data from the google map, and syncs this data with the database.
         """
-        if not self.valid_update_flags():
-            raise ValueError('The CoronaCaseRaw table contains inconsistent update flags.')
+        self.purge_invalid()
         new_flag: bool = not self.latest_flag()
         new_date = timezone.now()
         # insert into db
@@ -59,12 +62,12 @@ class Updater():
                     'date_received': new_date,
                     **case,
                 },
-                **case
+                case_type=case['case_type'],
+                latitude=case['latitude'],
+                longitude=case['longitude'],
             )
-        # delete any cases which weren't in the map data
-        CoronaCaseRaw.objects.filter(update_flag=(not new_flag)).delete()
-        if not self.valid_update_flags():
-            raise ValueError('The CoronaCaseRaw table contains inconsistent update flags.')
+        self.delete_with_flag(not new_flag)
+        self.purge_invalid()
         
     def latest_flag(self) -> bool:
         """Returns the update flag of the most recently updated record
@@ -88,4 +91,13 @@ class Updater():
         last_updated = CoronaCaseRaw.objects.latest('date_received').date_received
         return timezone.now() >= last_updated + timezone.timedelta(seconds=self.interval) 
 
-        
+    def purge_invalid(self) -> None:
+        if self.valid_update_flags():
+            return
+        flag = self.latest_flag()
+        self.delete_with_flag(not flag)
+
+    def delete_with_flag(self, flag: bool):
+        CoronaCaseRaw.objects.filter(update_flag=flag).delete()
+
+

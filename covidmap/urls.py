@@ -1,6 +1,11 @@
 from django.urls import include, path
 from rest_framework import routers
 from cases import views
+from cases.updater import Updater
+
+
+updater = Updater()
+updater.run()
 
 router = routers.DefaultRouter()
 router.register(r'raw-cases', views.CoronaCaseRawViewSet)
