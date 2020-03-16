@@ -3,6 +3,7 @@ import threading
 import time
 from django.utils import timezone
 from typing import Dict, List, Any
+from .decorators import skip_when_testing
 from .map_client import fetch_cases
 from .models import CoronaCaseRaw
 
@@ -11,7 +12,8 @@ class Updater():
     # 1 hour
     interval = 3600
 
-    def __init__(self):
+    @skip_when_testing
+    def run(self):
         self.update()
         schedule.every(self.interval).seconds.do(self.update)
         self.run_continuously(self.interval)

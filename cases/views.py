@@ -8,9 +8,10 @@ from .serializers import UserSerializer, GroupSerializer, CoronaCaseRawSerialize
 from .models import CoronaCaseRaw
 from .updater import Updater
 
+# is there a better place for this? 
 updater = Updater()
+updater.run()
 
-# Create your views here.
 def index(request):
     return HttpResponse("Hello, world. You're at the polls index.")
 

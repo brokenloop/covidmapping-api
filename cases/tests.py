@@ -2,7 +2,7 @@ import mock
 from django.test import TestCase
 from django.utils import timezone
 from cases.map_client import fetch_cases
-from .updater import sync_db
+from .updater import Updater
 from .models import CoronaCaseRaw
 
 
@@ -12,11 +12,12 @@ def mocked_fetch_cases(*args, **kwargs):
 class UpdaterTests(TestCase):
     def __init__(self, *args, **kwargs):
         super(UpdaterTests, self).__init__(*args, **kwargs)
+        self.updater = Updater()
 
     def test_sync_db_create(self):
         """Test that cases can be inserted
         """
-        sync_db(SAMPLE_DATA)
+        self.updater.sync_db(SAMPLE_DATA)
         expected_num_entries: int = len(SAMPLE_DATA)
         num_entries: int = CoronaCaseRaw.objects.all().count()
         self.assertEqual(expected_num_entries, num_entries)
@@ -47,7 +48,7 @@ class UpdaterTests(TestCase):
             update_flag=update_flag,
             date_received=date_received,
         )
-        sync_db(SAMPLE_DATA)
+        self.updater.sync_db(SAMPLE_DATA)
         expected_num_entries: int = len(SAMPLE_DATA)
         num_entries: int = CoronaCaseRaw.objects.all().count()
         self.assertEqual(expected_num_entries, num_entries)
@@ -77,7 +78,7 @@ class UpdaterTests(TestCase):
             update_flag=update_flag,
             date_received=date_received,
         )
-        sync_db([])
+        self.updater.sync_db([])
         expected_num_entries: int = 0
         num_entries: int = CoronaCaseRaw.objects.all().count()
         self.assertEqual(expected_num_entries, num_entries)
@@ -106,11 +107,11 @@ class UpdaterTests(TestCase):
             update_flag=False,
             date_received=timezone.now(),
         )
-        self.assertRaises(ValueError, sync_db, [])
+        self.assertRaises(ValueError, self.updater.sync_db, [])
 
     def test_with_live_data(self):
         cases = fetch_cases()
-        sync_db(cases)
+        self.updater.sync_db(cases)
 
 
 SAMPLE_DATA = [
