@@ -1,3 +1,4 @@
+import schedule
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.contrib.auth.models import User, Group
@@ -5,7 +6,9 @@ from rest_framework import viewsets
 from rest_framework import permissions
 from .serializers import UserSerializer, GroupSerializer, CoronaCaseRawSerializer
 from .models import CoronaCaseRaw
+from .updater import Updater
 
+updater = Updater()
 
 # Create your views here.
 def index(request):
