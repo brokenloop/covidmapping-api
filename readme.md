@@ -36,7 +36,7 @@ python manage.py migrate
 python manage.py runserver
 ```
 
-Now you should be able to visit http://localhost:8000/cases, and you'll have your API up and running! 
+Now you should be able to visit http://localhost:8000, and you'll have your API up and running! 
 
 ## Contributing
 
