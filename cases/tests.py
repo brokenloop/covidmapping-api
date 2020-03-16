@@ -22,7 +22,6 @@ class UpdaterTests(TestCase):
         num_entries: int = CoronaCaseRaw.objects.all().count()
         self.assertEqual(expected_num_entries, num_entries)
 
-
     def test_sync_db_update(self):
         """Test that cases can be updated
         """
@@ -116,6 +115,35 @@ class UpdaterTests(TestCase):
         num_entries: int = CoronaCaseRaw.objects.all().count()
         self.assertEqual(expected_num_entries, num_entries)
 
+    def test_should_update_true(self):
+        update_delta: int = self.updater.interval * 2
+        date_received = timezone.now() - timezone.timedelta(seconds=update_delta)
+        first_case = SAMPLE_DATA[0]
+        CoronaCaseRaw.objects.get_or_create(
+            case_type=first_case['case_type'],
+            name=first_case['name'],
+            description=first_case['description'],
+            latitude=first_case['latitude'],
+            longitude=first_case['longitude'],
+            update_flag=True,
+            date_received=date_received,
+        )
+        self.assertTrue(self.updater.should_update())
+
+    def test_should_update_false(self):
+        update_delta: int = self.updater.interval // 2
+        date_received = timezone.now() - timezone.timedelta(seconds=update_delta)
+        first_case = SAMPLE_DATA[0]
+        CoronaCaseRaw.objects.get_or_create(
+            case_type=first_case['case_type'],
+            name=first_case['name'],
+            description=first_case['description'],
+            latitude=first_case['latitude'],
+            longitude=first_case['longitude'],
+            update_flag=True,
+            date_received=date_received,
+        )
+        self.assertFalse(self.updater.should_update())
 
     # def test_with_live_data(self):
     #     cases = fetch_cases()

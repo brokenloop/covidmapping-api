@@ -14,7 +14,8 @@ class Updater():
 
     @skip_when_testing
     def run(self):
-        self.update()
+        if self.should_update():
+            self.update()
         schedule.every(self.interval).seconds.do(self.update)
         self.run_continuously(self.interval)
 
@@ -78,3 +79,13 @@ class Updater():
         if CoronaCaseRaw.objects.all().count() < 2:
             return True
         return not CoronaCaseRaw.objects.filter(update_flag=(not self.latest_flag())).exists()
+
+    def should_update(self) -> bool:
+        """Returns True if the last update is older than the update interval
+        """
+        if CoronaCaseRaw.objects.all().count() == 0:
+            return True
+        last_updated = CoronaCaseRaw.objects.latest('date_received').date_received
+        return timezone.now() >= last_updated + timezone.timedelta(seconds=self.interval) 
+
+        
